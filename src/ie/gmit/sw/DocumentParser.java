@@ -43,7 +43,7 @@ public class DocumentParser implements Runnable {
 			
 			while ( (line = br.readLine()) != null ) {
 				String uLine = line.toUpperCase();
-				String [] words = uLine.split(" ");
+				String [] words = uLine.split("\\s+");
 				addWordsToBuffer(words);
 				Shingle s = getNextShingle();
 				queue.put(s);

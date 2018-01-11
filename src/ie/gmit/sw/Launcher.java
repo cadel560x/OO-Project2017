@@ -4,7 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Launcher {
-	public void Launch(String f1, String f2, int  shingleSize, int k, int poolSize) throws InterruptedException {
+	public void launch(String f1, String f2, int  shingleSize, int k, int poolSize) throws InterruptedException {
 		BlockingQueue<Shingle> q = new LinkedBlockingQueue<>();
 		
 		Thread t1 = new Thread(new DocumentParser(f1, q, shingleSize, 1), "T1");
