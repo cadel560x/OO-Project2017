@@ -1,23 +1,34 @@
 package ie.gmit.sw;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 
 
+/**
+ * 
+ * This class gets shingles from a BlockingQueue and throws them into threadpool.
+ * The workers in the threadpool calculate the minhash for each shingle.
+ * After all minhashes are computed, the Jaccard similarity index is calculated.
+ * 
+ * @author Javier Mantilla
+ *
+ */
 public class Consumer implements Runnable {
 //  Fields
 	private BlockingQueue<Shingle> queue;
 	private int k;
 	private int[] minHashes;
-	private Map<Integer,List<Integer>>map = new HashMap<>();
+	private ConcurrentMap<Integer,List<Integer>> map = new ConcurrentHashMap<Integer, List<Integer>>();
 	private ExecutorService pool;
 	
 	
@@ -71,18 +82,12 @@ public class Consumer implements Runnable {
 					pool.execute( new Runnable() {
 						
 						public void run() {
+							List<Integer> list =  map.get(s.getDocId());
+							
 							for (int i = 0; i < minHashes.length; i++) {
 								int value = s.getHashCode()^minHashes[i];
-								List<Integer> list =  map.get(s.getDocId());
-								
 								if (list == null) {
-									list = new ArrayList<Integer>(k);
-									
-									for ( int j = 0; j < list.size(); j++ ) {
-										list.set(j, Integer.MAX_VALUE);
-										
-									} // for
-									
+									list = new ArrayList<Integer>(Collections.nCopies(k, Integer.MAX_VALUE));
 									map.put(s.getDocId(), list);
 								}
 								else {
@@ -92,6 +97,8 @@ public class Consumer implements Runnable {
 								} // if - else
 								
 							} // for
+							
+							map.put(s.getDocId(), list);
 						
 						} // run
 						
@@ -105,11 +112,18 @@ public class Consumer implements Runnable {
 			
 		} // while
 		
+		pool.shutdown();
+		try {
+			pool.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		List<Integer> intersection = map.get(1);
 		intersection.retainAll(map.get(2));
-		float jacquard = (float) intersection.size()/(k*2-(float)intersection.size());
+		float jaccard = (float) intersection.size()/(k*2-(float)intersection.size());
 		
-		System.out.println("Document matching index: " + jacquard + "%");
+		System.out.println("Document matching index: " + jaccard + "%");
 		
 	} // run
 

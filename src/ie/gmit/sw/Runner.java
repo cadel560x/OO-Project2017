@@ -42,17 +42,17 @@ public class Runner {
 		file2 = scanner.nextLine();
 		
 		sb.setLength(0);
-		sb.append("Please enter the shingle size [words]: ");
+		sb.append("Please enter the shingle size [in words]: ");
 		System.out.print(sb.toString());
 		shingleSize = Integer.parseInt(scanner.nextLine());
 		
 		sb.setLength(0);
-		sb.append("Please enter the shingle sample size: ");
+		sb.append("Please enter the amount of minhashes: ");
 		System.out.print(sb.toString());
 		k = Integer.parseInt(scanner.nextLine());
 		
 		sb.setLength(0);
-		sb.append("Please enter the pool size of workers: ");
+		sb.append("Please enter threadpool size: ");
 		System.out.print(sb.toString());
 		poolSize = Integer.parseInt(scanner.nextLine());
 		

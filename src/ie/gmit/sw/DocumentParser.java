@@ -13,6 +13,10 @@ import java.util.concurrent.BlockingQueue;
 
 /**
  * 
+ * This class parses plaintext documents into shingles. Given the size of the shingle set by the field shingleSize.
+ * It uses a LinkedList as a buffer where words from the document are temporarily  stored and then popped out by
+ * groups of shingleSize. Then the shingle hashcode is calculated and offered to the BlockingQueue.
+ * 
  * @author Javier Mantilla
  *
  */
@@ -45,7 +49,7 @@ public class DocumentParser implements Runnable{
 			String line = null;
 			
 			while((line = br.readLine())!= null) {
-				if(line.length()>0) {
+				if ( line.length() > 0 ) {
 					String uLine = line.toUpperCase();
 					String [] words = uLine.split("\\s+");
 					
